@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanilla SSTI Demo - Security Research Project</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚨 Vanilla SSTI Demo</h1>
+            <p class="header-subtitle">A minimal Node.js application demonstrating Server-Side Template Injection vulnerabilities</p>
+            <div class="status status--warning">
+                <strong>⚠️ Educational Purpose Only</strong> - This application is intentionally vulnerable
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+            <button class="tab-btn" data-tab="files">Project Files</button>
+            <button class="tab-btn" data-tab="demo">Live Demo</button>
+            <button class="tab-btn" data-tab="deployment">Deployment</button>
+            <button class="tab-btn" data-tab="security">Security</button>
+        </nav>
+
+        <main class="tab-content">
+            <!-- Overview Tab -->
+            <section id="overview" class="tab-pane active">
+                <div class="card">
+                    <div class="card__body">
+                        <h2>What is Server-Side Template Injection (SSTI)?</h2>
+                        <p>Server-Side Template Injection occurs when user input is embedded into a template engine without proper sanitization, allowing attackers to execute arbitrary code on the server.</p>
+                        
+                        <h3>Why This Demo Matters</h3>
+                        <ul>
+                            <li><strong>Educational Value:</strong> Demonstrates real-world security vulnerabilities</li>
+                            <li><strong>Security Research:</strong> Helps developers understand injection attacks</li>
+                            <li><strong>Awareness:</strong> Shows how template engines can be exploited</li>
+                            <li><strong>Prevention:</strong> Teaches secure coding practices</li>
+                        </ul>
+
+                        <div class="warning-box">
+                            <h4>🔴 Critical Security Warning</h4>
+                            <p>This application contains intentional security vulnerabilities and should <strong>NEVER</strong> be deployed to production environments. It is designed purely for educational and research purposes.</p>
+                        </div>
+
+                        <h3>Key Features</h3>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <h4>🎯 Vulnerable Endpoint</h4>
+                                <p>Demonstrates unsafe template evaluation</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4>📝 Multiple Syntaxes</h4>
+                                <p>Supports both ${} and {{}} template syntax</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4>🌐 Environment Access</h4>
+                                <p>Shows environment variable exposure</p>
+                            </div>
+                            <div class="feature-item">
+                                <h4>⚡ Instant Results</h4>
+                                <p>Real-time template evaluation</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Files Tab -->
+            <section id="files" class="tab-pane">
+                <div class="file-browser">
+                    <div class="file-tree">
+                        <div class="file-item active" data-file="package.json">
+                            <span class="file-icon">📦</span> package.json
+                        </div>
+                        <div class="file-item" data-file="server.js">
+                            <span class="file-icon">⚙️</span> server.js
+                        </div>
+                        <div class="file-item" data-file="index.html">
+                            <span class="file-icon">🌐</span> public/index.html
+                        </div>
+                        <div class="file-item" data-file="readme.md">
+                            <span class="file-icon">📄</span> README.md
+                        </div>
+                    </div>
+                    
+                    <div class="file-viewer">
+                        <div class="file-header">
+                            <span id="current-file">package.json</span>
+                            <div class="file-actions">
+                                <button class="btn btn--sm btn--outline" id="copy-file">Copy</button>
+                                <button class="btn btn--sm btn--outline" id="download-file">Download</button>
+                            </div>
+                        </div>
+                        <pre id="file-content" class="code-block"></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Live Demo Tab -->
+            <section id="demo" class="tab-pane">
+                <div class="card">
+                    <div class="card__header">
+                        <h2>🧪 SSTI Payload Tester</h2>
+                        <div class="status status--error">
+                            Simulated Environment - No Real Vulnerabilities
+                        </div>
+                    </div>
+                    <div class="card__body">
+                        <div class="demo-section">
+                            <div class="form-group">
+                                <label class="form-label" for="payload-input">Template Payload:</label>
+                                <textarea id="payload-input" class="form-control" placeholder="Try: ${7*7} or {{process.env.NODE_ENV}}"></textarea>
+                            </div>
+                            <button class="btn btn--primary" id="test-payload">Test Payload</button>
+                        </div>
+
+                        <div class="results-section">
+                            <h3>Output:</h3>
+                            <div id="payload-result" class="result-box"></div>
+                        </div>
+
+                        <div class="examples-section">
+                            <h3>Example Payloads:</h3>
+                            <div class="example-grid">
+                                <div class="example-card" data-payload="${7*7}">
+                                    <h4>Basic Arithmetic</h4>
+                                    <code>${7*7}</code>
+                                    <p>Result: <span class="result">49</span></p>
+                                </div>
+                                <div class="example-card" data-payload="{{7*7}}">
+                                    <h4>Alternative Syntax</h4>
+                                    <code>{{7*7}}</code>
+                                    <p>Result: <span class="result">49</span></p>
+                                </div>
+                                <div class="example-card" data-payload="${process.env.NODE_ENV}">
+                                    <h4>Environment Variable</h4>
+                                    <code>${process.env.NODE_ENV}</code>
+                                    <p>Result: <span class="result">production</span></p>
+                                </div>
+                                <div class="example-card" data-payload="{{JSON.stringify(process.env, null, 2)}}">
+                                    <h4>Environment Dump</h4>
+                                    <code>{{JSON.stringify(process.env, null, 2)}}</code>
+                                    <p>Result: <span class="result">Environment object</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deployment Tab -->
+            <section id="deployment" class="tab-pane">
+                <div class="card">
+                    <div class="card__body">
+                        <h2>🚀 Deployment Guide</h2>
+                        <div class="status status--warning">
+                            Deploy only to isolated environments for research purposes
+                        </div>
+                        
+                        <h3>Prerequisites</h3>
+                        <ul>
+                            <li>Node.js 18.0.0 or higher</li>
+                            <li>npm or yarn package manager</li>
+                            <li>Vercel CLI (optional)</li>
+                        </ul>
+
+                        <h3>Step-by-Step Instructions</h3>
+                        <div class="deployment-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Create Project Directory</h4>
+                                    <code class="command">mkdir vanilla-ssti-demo && cd vanilla-ssti-demo</code>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Initialize Project</h4>
+                                    <code class="command">npm init -y</code>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Install Dependencies</h4>
+                                    <code class="command">npm install express</code>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>Create Project Files</h4>
+                                    <p>Copy the files from the "Project Files" tab into your project directory</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h4>Test Locally</h4>
+                                    <code class="command">npm start</code>
+                                    <p>Visit <code>http://localhost:3000</code></p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">6</div>
+                                <div class="step-content">
+                                    <h4>Deploy to Vercel</h4>
+                                    <code class="command">npx vercel --prod</code>
+                                    <p>Follow the prompts to deploy your application</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="deployment-warning">
+                            <h4>⚠️ Deployment Warning</h4>
+                            <p>Only deploy this application to:</p>
+                            <ul>
+                                <li>Isolated development environments</li>
+                                <li>Security research labs</li>
+                                <li>Educational platforms with proper disclaimers</li>
+                            </ul>
+                            <p><strong>Never deploy to production or public-facing environments!</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Tab -->
+            <section id="security" class="tab-pane">
+                <div class="security-grid">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>🔴 Vulnerabilities</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="vulnerability-list">
+                                <div class="vuln-item">
+                                    <h4>Server-Side Template Injection (SSTI)</h4>
+                                    <p>Direct evaluation of user input as template code</p>
+                                    <div class="status status--error">Critical</div>
+                                </div>
+                                <div class="vuln-item">
+                                    <h4>Environment Variable Exposure</h4>
+                                    <p>Access to sensitive environment variables</p>
+                                    <div class="status status--error">High</div>
+                                </div>
+                                <div class="vuln-item">
+                                    <h4>Remote Code Execution</h4>
+                                    <p>Ability to execute arbitrary JavaScript code</p>
+                                    <div class="status status--error">Critical</div>
+                                </div>
+                                <div class="vuln-item">
+                                    <h4>Information Disclosure</h4>
+                                    <p>Exposure of server-side information</p>
+                                    <div class="status status--warning">Medium</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>🛡️ Mitigations</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="mitigation-list">
+                                <div class="mitigation-item">
+                                    <h4>Input Validation</h4>
+                                    <p>Never evaluate user input as code. Always validate and sanitize inputs.</p>
+                                </div>
+                                <div class="mitigation-item">
+                                    <h4>Safe Templating</h4>
+                                    <p>Use templating engines with proper sandboxing and security controls.</p>
+                                </div>
+                                <div class="mitigation-item">
+                                    <h4>Principle of Least Privilege</h4>
+                                    <p>Run applications with minimal required permissions.</p>
+                                </div>
+                                <div class="mitigation-item">
+                                    <h4>Content Security Policy</h4>
+                                    <p>Implement CSP headers to prevent script injection.</p>
+                                </div>
+                                <div class="mitigation-item">
+                                    <h4>Template Engine Configuration</h4>
+                                    <p>Configure template engines to disable dangerous features.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card__header">
+                        <h3>📚 Security Resources</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="resource-links">
+                            <a href="https://owasp.org/www-project-web-security-testing-guide/v42/4-Web_Application_Security_Testing/07-Input_Validation_Testing/18-Testing_for_Server_Side_Template_Injection" target="_blank" class="resource-link">OWASP SSTI Testing Guide</a>
+                            <a href="https://portswigger.net/web-security/server-side-template-injection" target="_blank" class="resource-link">PortSwigger SSTI Guide</a>
+                            <a href="https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection" target="_blank" class="resource-link">HackTricks SSTI Reference</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
