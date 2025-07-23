@@ -1,12 +1,15 @@
 {
-  "name": "ssti-vanilla",
+  "name": "vanilla-ssti-demo",
   "version": "1.0.0",
-  "description": "Intentionally insecure SSTI demo for env-var leakage",
-  "main": "app.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node api/index.js",
+    "dev": "node api/index.js"
   },
   "dependencies": {
     "express": "^4.19.2"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
