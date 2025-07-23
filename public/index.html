@@ -66,4 +66,92 @@
             border-radius: 4px;
             margin: 20px 0;
         }
-        .exampl
+        .examples h3 {
+            margin-top: 0;
+        }
+        .example-payload {
+            background-color: #f1f3f4;
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .example-payload:hover {
+            background-color: #e8eaed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔓 SSTI Vulnerability Demo</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Security Warning:</strong> This application is intentionally vulnerable and designed for educational purposes only. 
+            Never deploy similar code in production environments.
+        </div>
+
+        <p>This demo shows how Server-Side Template Injection (SSTI) can expose sensitive environment variables, including AWS credentials in serverless environments like Vercel.</p>
+
+        <div class="examples">
+            <h3>Example Payloads (click to use):</h3>
+            <div class="example-payload" onclick="usePayload('${7*7}')">${7*7} - Basic math test</div>
+            <div class="example-payload" onclick="usePayload('{{7*7}}')">${{7*7}} - Alternative syntax</div>
+            <div class="example-payload" onclick="usePayload('${process.env}')">${process.env} - Environment variables</div>
+            <div class="example-payload" onclick="usePayload('{{JSON.stringify(process.env, null, 2)}}')">${{JSON.stringify(process.env, null, 2)}} - Formatted output</div>
+        </div>
+
+        <form id="sstiForm">
+            <label for="template"><strong>Enter SSTI Payload:</strong></label>
+            <textarea id="template" name="template" placeholder="Try: ${7*7} or {{process.env}}"></textarea>
+            <br>
+            <button type="submit">Test SSTI Vulnerability</button>
+        </form>
+
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        function usePayload(payload) {
+            document.getElementById('template').value = payload;
+        }
+
+        document.getElementById('sstiForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const template = document.getElementById('template').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!template.trim()) {
+                alert('Please enter a template payload');
+                return;
+            }
+
+            try {
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = 'Testing payload...';
+
+                const response = await fetch('/api/preview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ template: template })
+                });
+
+                const data = await response.json();
+                
+                if (data.result !== undefined) {
+                    resultDiv.textContent = `Result:\n${data.result}`;
+                } else if (data.error) {
+                    resultDiv.textContent = `Error:\n${data.error}`;
+                } else {
+                    resultDiv.textContent = 'Unexpected response format';
+                }
+            } catch (error) {
+                resultDiv.textContent = `Network Error:\n${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
